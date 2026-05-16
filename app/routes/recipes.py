@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 
 from .. import config
 from ..services import db, bedrock, matching
+from ..services.bedrock import BedrockUnavailable
 
 bp = Blueprint("recipes", __name__)
 TABLE = config.RECIPES_TABLE
@@ -89,7 +90,10 @@ def import_from_url():
     for tag in soup(["script", "style", "noscript"]):
         tag.decompose()
     text = soup.get_text(" ", strip=True)
-    parsed = bedrock.import_recipe(text)
+    try:
+        parsed = bedrock.import_recipe(text)
+    except BedrockUnavailable as e:
+        return jsonify({"error": str(e)}), 503
     if not parsed:
         return jsonify({"error": "could not extract recipe"}), 422
     parsed.setdefault("ingredients", [])
@@ -103,7 +107,10 @@ def generate_from_title():
     prompt = (data.get("prompt") or "").strip()
     if not prompt:
         return jsonify({"error": "prompt required"}), 400
-    parsed = bedrock.generate_recipe(prompt)
+    try:
+        parsed = bedrock.generate_recipe(prompt)
+    except BedrockUnavailable as e:
+        return jsonify({"error": str(e)}), 503
     if not parsed:
         return jsonify({"error": "generation failed"}), 502
     return jsonify(parsed)

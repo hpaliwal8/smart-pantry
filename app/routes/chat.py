@@ -8,6 +8,7 @@ from flask import Blueprint, jsonify, request
 
 from .. import config
 from ..services import db, bedrock
+from ..services.bedrock import BedrockUnavailable
 
 bp = Blueprint("chat", __name__)
 
@@ -52,5 +53,8 @@ def chat():
     if not message:
         return jsonify({"error": "message required"}), 400
     context = _build_context()
-    blocks = bedrock.chef_chat(message, context, history)
+    try:
+        blocks = bedrock.chef_chat(message, context, history)
+    except BedrockUnavailable as e:
+        return jsonify({"error": str(e)}), 503
     return jsonify({"blocks": blocks})

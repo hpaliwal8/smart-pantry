@@ -13,12 +13,17 @@ import re
 from typing import Any
 
 import boto3
+from botocore.exceptions import ClientError
 
 from .. import config
 
 log = logging.getLogger(__name__)
 
 _client = boto3.client("bedrock-runtime", region_name=config.AWS_REGION)
+
+
+class BedrockUnavailable(RuntimeError):
+    """Raised when Bedrock is reachable but the model isn't usable (access/use-case form)."""
 
 
 def invoke(
@@ -28,7 +33,11 @@ def invoke(
     max_tokens: int = 2048,
     temperature: float = 0.6,
 ) -> str:
-    """Invoke Claude via Bedrock and return the assistant text."""
+    """Invoke Claude via Bedrock and return the assistant text.
+
+    Raises BedrockUnavailable when the call fails for access/setup reasons —
+    routes translate this into a 503 so the UI can show a friendly message.
+    """
     body: dict[str, Any] = {
         "anthropic_version": "bedrock-2023-05-31",
         "max_tokens": max_tokens,
@@ -37,7 +46,16 @@ def invoke(
     }
     if system:
         body["system"] = system
-    resp = _client.invoke_model(modelId=config.BEDROCK_MODEL_ID, body=json.dumps(body))
+    try:
+        resp = _client.invoke_model(modelId=config.BEDROCK_MODEL_ID, body=json.dumps(body))
+    except ClientError as e:
+        msg = str(e)
+        if "use case details" in msg or "ResourceNotFoundException" in msg or "AccessDenied" in msg:
+            raise BedrockUnavailable(
+                "Bedrock model not available yet. Submit the Anthropic use-case "
+                "form at AWS Bedrock → Model access, then retry."
+            ) from e
+        raise
     payload = json.loads(resp["body"].read())
     parts = payload.get("content", [])
     return "".join(p.get("text", "") for p in parts if p.get("type") == "text")
