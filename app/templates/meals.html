@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page">
+  <div class="page-head">
+    <h1>Meal Plan</h1>
+    <p class="muted">Drag a week of meals together; see exactly what you need to shop for.</p>
+  </div>
+
+  <div id="meal-grid" class="meal-grid"></div>
+
+  <div class="page-head" style="margin-top:2rem;">
+    <h2>Grocery preview</h2>
+    <p class="muted">What this week's plan needs, classified by your pantry.</p>
+  </div>
+  <div id="preview-out"></div>
+  <button id="preview-add-all" class="primary" style="margin-top:0.5rem;">Add all "to buy" to grocery list</button>
+</section>
+
+<div id="recipe-picker" class="modal hidden">
+  <div class="modal-card">
+    <header><span>Pick a recipe</span><button id="picker-close">×</button></header>
+    <input id="picker-search" placeholder="Search recipes…" />
+    <div id="picker-list" class="list"></div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/meals.js') }}"></script>
+{% endblock %}

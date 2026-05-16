@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page">
+  <div class="page-head">
+    <h1>Grocery List</h1>
+    <p class="muted">Check items off, then sweep them into your pantry.</p>
+  </div>
+
+  <form id="grocery-add" class="row-form">
+    <input name="name" placeholder="Item name" required />
+    <input name="quantity" type="number" min="0" step="0.5" value="1" />
+    <input name="unit" placeholder="Unit" />
+    <button type="submit">Add</button>
+  </form>
+
+  <div class="row-actions">
+    <button id="move-to-pantry" class="primary">Move purchased to pantry</button>
+  </div>
+
+  <div id="grocery-list" class="list"></div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/grocery.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PantryAI</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+</head>
+<body>
+<header class="topbar">
+  <a href="/" class="brand">PantryAI</a>
+  <nav>
+    <a href="/" class="{{ 'active' if active=='pantry' else '' }}">Pantry</a>
+    <a href="/recipes" class="{{ 'active' if active=='recipes' else '' }}">Recipes</a>
+    <a href="/grocery" class="{{ 'active' if active=='grocery' else '' }}">Grocery</a>
+    <a href="/meals" class="{{ 'active' if active=='meals' else '' }}">Meal Plan</a>
+  </nav>
+  <button id="chef-toggle" class="chef-btn">Chef Charlie</button>
+</header>
+
+<main class="main">
+  {% block content %}{% endblock %}
+</main>
+
+<aside id="chef-panel" class="chef-panel hidden" aria-hidden="true">
+  <div class="chef-header">
+    <span>Chef Charlie</span>
+    <button id="chef-close" aria-label="close">×</button>
+  </div>
+  <div id="chef-log" class="chef-log"></div>
+  <form id="chef-form" class="chef-form">
+    <input id="chef-input" type="text" placeholder="Ask Chef Charlie…" autocomplete="off" />
+    <button type="submit">Send</button>
+  </form>
+</aside>
+
+<div id="toast-host" class="toast-host"></div>
+
+<script src="{{ url_for('static', filename='js/api.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chef.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

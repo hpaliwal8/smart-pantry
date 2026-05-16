@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page">
+  <div class="page-head">
+    <h1>Recipes</h1>
+    <p class="muted">Every recipe is matched against your pantry in real time.</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="can-make">What I can make</button>
+    <button class="tab" data-tab="all">All recipes</button>
+    <button class="tab" data-tab="suggest">Smart suggestions</button>
+    <button class="tab" data-tab="import">Import / generate</button>
+  </div>
+
+  <div id="tab-can-make" class="tab-pane active"><div class="list" id="match-list"></div></div>
+  <div id="tab-all" class="tab-pane"><div class="list" id="all-list"></div></div>
+  <div id="tab-suggest" class="tab-pane"><div id="suggest-out"></div></div>
+  <div id="tab-import" class="tab-pane">
+    <form id="import-form" class="row-form">
+      <input name="url" placeholder="Paste recipe URL" style="flex:1" required />
+      <button type="submit">Import</button>
+    </form>
+    <form id="generate-form" class="row-form">
+      <input name="prompt" placeholder="Generate recipe by title (e.g. Marry Me Chicken)" style="flex:1" required />
+      <button type="submit">Generate</button>
+    </form>
+    <div id="recipe-preview"></div>
+    <hr />
+    <h3>Manual entry</h3>
+    <form id="recipe-form" class="stack-form">
+      <input name="title" placeholder="Title" required />
+      <textarea name="ingredients" placeholder="One ingredient per line" rows="6"></textarea>
+      <textarea name="instructions" placeholder="One step per line" rows="6"></textarea>
+      <input name="image_url" placeholder="Image URL (optional)" />
+      <label><input type="checkbox" name="library" /> Add to shared library</label>
+      <button type="submit">Save recipe</button>
+    </form>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/recipes.js') }}"></script>
+{% endblock %}
